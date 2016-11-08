@@ -28,4 +28,4 @@ packages:
 runcmd:
   - git clone https://github.com/rkhozinov/ansible-playbooks.git
   - cd ansible-playbooks/minikube
-  - ansible-playbook -i 'localhost,' --connection=local minikube.yml
+  - ansible-playbook -i 'localhost,' --connection=local minikube.yaml
