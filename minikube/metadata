@@ -4,7 +4,7 @@ manage_etc_hosts: true
 
 apt_upgrade: update
 apt_upgrade: true
-apt_preserve_sources_list: true
+apt_preserve_sources_list: false
 
 apt_sources:
  - source: "ppa:ansible/ansible"    # Quote the string
