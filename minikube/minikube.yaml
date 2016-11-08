@@ -66,3 +66,38 @@
 
     - name: Update your current session for the group change to take effect
       command: bash -c "newgrp libvirtd"
+
+    - name: Start minikube
+      command: minikube start --vm-driver=kvm
+
+    - name: Get minikube address
+      command: minikube ip
+      register: minikube_ip
+
+    - name: Clean iptables
+      command: iptables -t {{item}} -F
+      tags: iptables
+      with_items:
+        - 'filter'
+        - 'mangle'
+        - 'nat'
+
+    - name: Configure masquerading
+      command: iptables -t nat -A POSTROUTING -o {{item}} -j MASQUERADE
+      tags: iptables
+      with_items:
+        - 'eth0'
+        - 'virbr0'
+        - 'virbr1'
+
+    - name: Configure port tcp/udp port forwarding
+      command: iptables -t nat -A PREROUTING -i eth0 -p {{item}} -j DNAT --to-destination {{minikube_ip}}
+      when: minikube_ip is defined
+      tags: iptables
+      with_items:
+        - 'udp'
+        - 'tcp'
+
+    - fail: msg="Minikube ip is undefined"
+      when: minikube_ip is undefined
+
