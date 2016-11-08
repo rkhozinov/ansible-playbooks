@@ -4,7 +4,6 @@ manage_etc_hosts: true
 
 apt_upgrade: update
 apt_upgrade: true
-apt_mirror: http://cz.archive.ubuntu.com/ubuntu/
 apt_preserve_sources_list: true
 
 apt_sources:
