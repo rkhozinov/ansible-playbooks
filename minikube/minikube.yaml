@@ -65,11 +65,8 @@
         mode: 0755
         force_basic_auth: yes
 
-    - name: Add yourself to the libvirtd group (may vary by linux distro) so you don't need to sudo
-      command: bash -c "usermod -a -G libvirtd $(whoami)"
-
-    - name: Update your current session for the group change to take effect
-      command: bash -c "newgrp libvirtd"
+    - name: Add user to libvirtd group
+      user: name={{ansible_user_id}} groups=libvirtd append=yes
 
     - name: Configure minikube
       command: minikube config set WantReportErrorPrompt false
