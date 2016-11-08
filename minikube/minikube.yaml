@@ -1,10 +1,12 @@
 ---
-- hosts: minikube
+- hosts: all
   remote_user: rkhozinov
   sudo: yes
   vars:
+    libvirt_log_level: 3 # info
+    qemu_security_driver: "none"
     packages:
-      - libvirt-bin 
+      - libvirt-bin
       - qemu-kvm
   tasks:
     - name: Run the equivalent of "apt-get update" as a separate step
@@ -22,6 +24,16 @@
            install_recommends=yes
       with_items:
         - "{{packages}}"
+
+    - name: configure libvirt
+      tags: libvirt
+      template: src=../templates/libvirtd.conf.j2
+                dest=/etc/libvirt/libvirtd.conf
+
+    - name: configure qemu
+      tags: libvirt
+      template: src=../templates/qemu.conf.j2
+                dest=/etc/libvirt/qemu.conf
 
     - name: restart libvirt
       tags: libvirt
@@ -52,5 +64,5 @@
     - name: Add yourself to the libvirtd group (may vary by linux distro) so you don't need to sudo
       command: bash -c "usermod -a -G libvirtd $(whoami)"
 
-    - name: Update your current session for the group change to take effect 
+    - name: Update your current session for the group change to take effect
       command: bash -c "newgrp libvirtd"

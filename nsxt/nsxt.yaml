@@ -91,12 +91,12 @@
 
     - name: configure libvirt
       tags: libvirt
-      template: src=libvirtd.conf.j2
+      template: src=../templates/libvirtd.conf.j2
                 dest=/etc/libvirt/libvirtd.conf
 
     - name: configure qemu
       tags: libvirt
-      template: src=qemu.conf.j2
+      template: src=../templates/qemu.conf.j2
                 dest=/etc/libvirt/qemu.conf
 
     - name: restart libvirt
