@@ -67,6 +67,9 @@
     - name: Add user to libvirtd group
       user: name={{ansible_user_id}} groups=libvirtd append=yes
 
+    - name: Refresh session after new group
+      shell: newgrp libvirtd
+
     - name: Configure minikube
       command: minikube config set WantReportErrorPrompt false
 
