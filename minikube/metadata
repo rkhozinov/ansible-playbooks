@@ -1,0 +1,31 @@
+#cloud-config
+apt_upgrade: update
+apt_upgrade: true
+
+apt:
+  primary:
+    - arches: [default]
+      uri: http://us.archive.ubuntu.com/ubuntu/
+
+users:
+  - default
+  - name: rkhozinov
+    gecos: Ruslan Khozinov
+    sudo: [ 'ALL=(ALL) NOPASSWD:ALL' ]
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: $6$rounds=4096$CpODpqx6P$.EoqiCGL5Soxn6qTqQMGwdnPXsQvxJ4TSkLgVG6MDvzPtokDYOSYbhe9BlrNT0d2wDjCtluuBoho/YXPIuJsE.
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCti9e5kyNEtX3MEns+eehUCzaxZmI8FWkWrLeRQY3jLUGzI3+N12tA7gKffczGIDP/ttnDg1hl98Yw28mkrIfYYMwRMqsBkGmYZyu6EXccyde6/5U/dgKVFGYLjWmbAAcaIaO2YoxqUJKvIanfLNHTRI29KwgxpaMCtjB7+jHiw/V0MF2xKi8yJgajZgh8iXPiv50BGjICx1BuqgqZb5jjxouV0FpU28mBOobqtaphOHeFPHk1Uool9MBt+2ocAjLbFhozmx0xryBVG4FGreovK60Zz4PuGCUL98rSTt8fbebfVokqkCG+sjykTcEQ8h5/0BUR4sPXw5mxATHD/AOv rkhozinov@rkhw
+
+
+packages:
+ - git
+ - curl
+ - atop
+ - ansible
+
+runcmd:
+  - git clone https://github.com/rkhozinov/ansible-playbooks.git
+  - cd ansible-playbooks/minikube
+  - ansible-playbook -i 'localhost,' --connection=local minikube.yml
