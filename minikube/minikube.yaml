@@ -1,0 +1,56 @@
+---
+- hosts: minikube
+  remote_user: rkhozinov
+  sudo: yes
+  vars:
+    packages:
+      - libvirt-bin 
+      - qemu-kvm
+  tasks:
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+
+    - name: ensure qemu is at the latest version
+      tags: packages
+      apt: name={{item}}
+           state=latest
+           install_recommends=yes
+      with_items:
+        - "{{packages}}"
+
+    - name: restart libvirt
+      tags: libvirt
+      service: name=libvirt-bin
+               state=restarted
+
+    - name: download minicube
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/v0.12.2/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: 755
+        force_basic_auth: yes
+
+    - name: download amd64 kubectl
+      get_url:
+        url: http://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
+        dest: /usr/local/bin/kubectl
+        mode: 755
+        force_basic_auth: yes
+
+    - name: Install libvirt and qemu-kvm on your system, e.g.
+      get_url:
+        url: https://github.com/dhiltgen/docker-machine-kvm/releases/download/v0.7.0/docker-machine-driver-kvm
+        dest: /usr/local/bin/docker-machine-driver-kvm
+        mode: 0755
+        force_basic_auth: yes
+
+    - name: Add yourself to the libvirtd group (may vary by linux distro) so you don't need to sudo
+      command: bash -c "usermod -a -G libvirtd $(whoami)"
+
+    - name: Update your current session for the group change to take effect 
+      command: bash -c "newgrp libvirtd"
