@@ -70,8 +70,14 @@
     - name: Update your current session for the group change to take effect
       command: bash -c "newgrp libvirtd"
 
+    - name: Configure minikube
+      command: minikube config set WantReportErrorPrompt false
+
     - name: Start minikube
       command: minikube start --vm-driver=kvm
+
+    - name: Start minikube dashboard
+      command: minikube dashboard
 
     - name: Get minikube address
       tags: iptables
@@ -82,6 +88,16 @@
       tags: iptables
       debug: msg={{minikube_ip.stdout}}
       when: minikube_ip is defined
+
+    - name: Get minikube dashboard url
+      tags: iptables
+      command: minikube dashboard --url
+      register: minikube_dashboard_url
+
+    - name: Show minikube dashboard url
+      tags: iptables
+      debug: msg={{minikube_dashboard_url.stdout}}
+      when: minikube_dashboard_url is defined
 
     - name: Configure ip forwarding
       tags: iptables
