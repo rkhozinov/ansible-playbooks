@@ -78,6 +78,11 @@
       command: minikube ip
       register: minikube_ip
 
+    - name: Show minikube address
+      tags: iptables
+      debug: msg={{minikube_ip.stdout}}
+      when: minikube_ip is defined
+
     - name: Configure ip forwarding
       tags: iptables
       template: src=../templates/sysctl.conf.j2
@@ -104,12 +109,9 @@
         - 'virbr1'
 
     - name: Configure port tcp/udp port forwarding
-      command: iptables -t nat -A PREROUTING -i eth0 -p {{item}} -j DNAT --to-destination {{minikube_ip}}
+      command: iptables -t nat -A PREROUTING -i eth0 -p {{item}} -j DNAT --to-destination {{minikube_ip.stdout}}
       when: minikube_ip is defined
       tags: iptables
       with_items:
         - 'udp'
         - 'tcp'
-
-    - fail: msg="Minikube ip is undefined"
-      when: minikube_ip is undefined
