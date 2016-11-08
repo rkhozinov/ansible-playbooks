@@ -11,6 +11,7 @@
     packages:
       - libvirt-bin
       - qemu-kvm
+      - root-system-bin
   tasks:
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
