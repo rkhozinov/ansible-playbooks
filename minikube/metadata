@@ -1,4 +1,9 @@
 #cloud-config
+apt:
+  sources:
+    ansible:
+       source: "ppa:ansible/ansible"
+
 apt_upgrade: update
 apt_upgrade: true
 
@@ -19,7 +24,9 @@ packages:
  - curl
  - atop
  - ansible
+ - software-properties-common
 
 runcmd:
   - git clone -b trunk https://github.com/rkhozinov/ansible-playbooks.git
-  - cd ansible-playbooks/minikube && ls -l && ansible-playbook -i 'localhost,' --connection=local minikube.yaml
+  - cd ansible-playbooks/minikube
+  - ansible-playbook -i 'localhost,' --connection=local minikube.yaml
