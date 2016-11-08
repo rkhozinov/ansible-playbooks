@@ -2,11 +2,6 @@
 apt_upgrade: update
 apt_upgrade: true
 
-apt:
-  primary:
-    - arches: [default]
-      uri: http://us.archive.ubuntu.com/ubuntu/
-
 users:
   - default
   - name: rkhozinov
