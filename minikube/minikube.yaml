@@ -74,6 +74,7 @@
       command: minikube start --vm-driver=kvm
 
     - name: Get minikube address
+      tags: iptables
       command: minikube ip
       register: minikube_ip
 
