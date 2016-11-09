@@ -8,9 +8,7 @@
     sysctl_net_ipv4_ip_forward: 1
     sysctl_net_ipv4_conf_default_rp_filter: 0
     sysctl_net_ipv4_conf_all_rp_filter: 0
-    packages:
-      - libvirt-bin
-      - qemu-kvm
+
   tasks:
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
@@ -19,14 +17,6 @@
     - name: Update all packages to the latest version
       apt:
         upgrade: dist
-
-    - name: ensure qemu is at the latest version
-      tags: packages
-      apt: name={{item}}
-           state=latest
-           install_recommends=yes
-      with_items:
-        - "{{packages}}"
 
     - name: configure libvirt
       tags: libvirt
@@ -63,12 +53,6 @@
         dest: /usr/local/bin/docker-machine-driver-kvm
         mode: 0755
         force_basic_auth: yes
-
-    - name: Add user to libvirtd group
-      user: name={{ansible_user_id}} groups=libvirtd append=yes
-
-    - name: Refresh session after new group
-      shell: newgrp libvirtd
 
     - name: Configure minikube
       command: minikube config set WantReportErrorPrompt false
