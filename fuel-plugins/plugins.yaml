@@ -2,137 +2,76 @@
 - hosts: all
   remote_user: root
   sudo: yes
-  vars: []
-    - { url: 'https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm',
-        name: ldap fuel plugin
-        destination: contrail.rpm
+  vars:
+    storage_endpoint: 172.16.177.5:5000
+  plugins:
+    contrail:
+      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm
+      name: contrail fuel plugin
+      dest: contrail.rpm
+      vcenter_package_url: http://{{storage_endpoint}}/contrail/5.0/contrail-install-vcenter-plugin_3.2.0.0-25_all.deb
+      vcenter_package_dest: /var/www/nailgun/plugins/contrail-5.0/
+      contrail_package_url:  http://{{storage_endpoint}}/contrail/5.0/contrail-install-packages_3.1.0.0-25%7eUbuntu-14.04.4-mitaka_all.deb
+      contrail_package_dest: /var/www/nailgun/plugins/contrail-5.0/
+      contrail_package_run:  /var/www/nailgun/plugins/contrail-5.0/install.sh
+
+    ldap:
+      url: http://plugins.mirantis.com/repository/l/d/ldap/ldap-3.0-3.0.0-1.noarch.rpm
+      name: ldap fuel plugin
+      dest: ldap.rpm
+
+    murano:
+      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/murano-1.1-1.1.0-1/detach-murano-1.1-1.1.0-1.noarch.rpm
+      name: murano fuel plugin
+      dest: murano.rpm
+
+    kibana:
+      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/elasticsearch_kibana-0.10-0.10.2-1.noarch.rpm
+      name: stacklight/kibana fuel plugin
+      dest: /root/kibana.rpm
+
+    grafana:
+      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/influxdb_grafana-0.10-0.10.2-1.noarch.rpm
+      name: stacklight/grafana fuel plugin
+      dest: /root/grafana.rpm
+
+    lma:
+      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/lma_collector-0.10-0.10.2-1.noarch.rpm
+      name: stacklight/lma fuel plugin
+      dest: /root/lma.rpm
 
   tasks:
-    - name: get ldap fuel plugin
+    - name: get plugins
       get_url:
-        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm
+        url: {{ item.url }}
+        dest: {{ item.dest }}
         force_basic_auth: yes
-        mode: 0400
-        dest: /root/contrail.rpm
-        with_items:
-          - { url: 'https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm',
-              name: ldap fuel plugin
-              destination: contrail.rpm
+        with_dict:
+          - {{ plugins }}
 
+    - name: install plugins
+      command: fuel plugins --install {{item.dest}}
+      with_dict:
+        - {{ plugins }}
 
-    - name: get ldap fuel plugin
+    - name: get contrail vcenter package
       get_url:
-        url: http://plugins.mirantis.com/repository/l/d/ldap/ldap-3.0-3.0.0-1.noarch.rpm
+        url: {{ item.vcenter_package_url }}
+        dest: {{ item.vcenter_package_dest }}
         force_basic_auth: yes
-        mode: 0400
-        dest: /root/ldap.rpm
-
-    - name: get murano fuel plugin
-      get_url:
-        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/murano-1.1-1.1.0-1/detach-murano-1.1-1.1.0-1.noarch.rpm
-        force_basic_auth: yes
-        dest: /root/murano.rpm
-        mode: 0400
-
-    - name: get stacklight/kibana fuel plugin
-      get_url:
-        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/elasticsearch_kibana-0.10-0.10.2-1.noarch.rpm
-        force_basic_auth: yes
-        dest: /root/kibana.rpm
-        mode: 0400
-
-    - name: get stacklight/grafana fuel plugin
-      get_url:
-        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/influxdb_grafana-0.10-0.10.2-1.noarch.rpm
-        force_basic_auth: yes
-        dest: /root/grafana.rpm
-        mode: 0400
-
-    - name: get stacklight/grafana fuel plugin
-      get_url:
-        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/lma_collector-0.10-0.10.2-1.noarch.rpm
-        force_basic_auth: yes
-        dest: /root/lma.rpm
-        mode: 0400
-
-
-          fuel plugins --install
-
-    - name: clean additional apt sources
-      file: path=/etc/apt/sources.list.d/ state={{item}}
       with_items:
-        - absent
-        - directory
-      tags: clean
+       - {{ plugins.contrail }}
 
-    - name: run puppet
-      command: puppet agent -tv {{ puppet_server }}
-      ignore_errors: yes
-      tags: puppet
-
-    - name: get list of sources
-      command: ls -l /etc/apt/sources.list.d/
-      register: list
-      tags: clean
-
-    - name: Run the equivalent of "apt-get update" as a separate step
-      apt:
-        update_cache: yes
-
-    - name: Update all packages to the latest version
-      apt:
-        upgrade: dist
-
-    - name: remove qemu is at the latest version
-      tags: packages
-      apt: name={{item}}
-           state=absent
-           install_recommends=yes
-           purge=yes
+    - name: get contrail package
+      get_url:
+        url: {{ item.contrail_package_url }}
+        dest: {{ item.contrail_package_url }}
+        force_basic_auth: yes
       with_items:
-        - "{{qemu_list}}"
+       - {{ plugins.contrail }}
 
-    - name: ensure qemu is at the latest version
-      tags: packages
-      apt: name={{item}}
-           state=latest
-           install_recommends=yes
+    - name: install contrail package
+      shell: bash -c "{{item.contrail_package_run}}"
       with_items:
-        - "{{qemu_list}}"
-
-    - name: remove libvirt is at the latest version
-      tags: packages
-      apt: name={{item}}
-           state=absent
-           install_recommends=yes
-           purge=yes
-      with_items:
-        - "{{libvirt_list}}"
-
-    - name: ensure libvirt is at the latest version
-      tags: packages
-      apt: name={{item}}
-           state=latest
-           install_recommends=yes
-      with_items:
-        - "{{libvirt_list}}"
-
-    - name: configure libvirt
-      tags: libvirt
-      template: src=../templates/libvirtd.conf.j2
-                dest=/etc/libvirt/libvirtd.conf
-
-    - name: configure qemu
-      tags: libvirt
-      template: src=../templates/qemu.conf.j2
-                dest=/etc/libvirt/qemu.conf
-
-    - name: restart libvirt
-      tags: libvirt
-      service: name=libvirt-bin
-               state=restarted
-
-    - name: version
-      tags: libvirt
-      command: bash -c 'dpkg -l | egrep "(libvirt|qemu)"'
+       - {{ plugins.contrail }}
 
