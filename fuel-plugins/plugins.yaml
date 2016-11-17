@@ -1,77 +1,100 @@
 ---
 - hosts: all
   remote_user: root
-  sudo: yes
+  gather_facts: false
   vars:
     storage_endpoint: 172.16.177.5:5000
-  plugins:
-    contrail:
-      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm
-      name: contrail fuel plugin
-      dest: contrail.rpm
-      vcenter_package_url: http://{{storage_endpoint}}/contrail/5.0/contrail-install-vcenter-plugin_3.2.0.0-25_all.deb
-      vcenter_package_dest: /var/www/nailgun/plugins/contrail-5.0/
-      contrail_package_url:  http://{{storage_endpoint}}/contrail/5.0/contrail-install-packages_3.1.0.0-25%7eUbuntu-14.04.4-mitaka_all.deb
-      contrail_package_dest: /var/www/nailgun/plugins/contrail-5.0/
-      contrail_package_run:  /var/www/nailgun/plugins/contrail-5.0/install.sh
+    fuel_plugins:
+      contrail:
+        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm
+        name: contrail fuel plugin
+        dest: contrail.rpm
+        vcenter_package_url: "http://{{storage_endpoint}}/contrail/5.0/contrail-install-vcenter-plugin_3.2.0.0-25_all.deb"
+        vcenter_package_dest: "/var/www/nailgun/fuel_plugins/contrail-5.0/"
+        contrail_package_url: "http://{{storage_endpoint}}/contrail/5.0/contrail-install-packages_3.1.0.0-25%7eUbuntu-14.04.4-mitaka_all.deb"
+        contrail_package_dest: "/var/www/nailgun/fuel_plugins/contrail-5.0/"
+        contrail_package_run: "/var/www/nailgun/fuel_plugins/contrail-5.0/install.sh"
 
-    ldap:
-      url: http://plugins.mirantis.com/repository/l/d/ldap/ldap-3.0-3.0.0-1.noarch.rpm
-      name: ldap fuel plugin
-      dest: ldap.rpm
+      ldap:
+        url: http://fuel_plugins.mirantis.com/repository/l/d/ldap/ldap-3.0-3.0.0-1.noarch.rpm
+        name: ldap fuel plugin
+        dest: ldap.rpm
 
-    murano:
-      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/murano-1.1-1.1.0-1/detach-murano-1.1-1.1.0-1.noarch.rpm
-      name: murano fuel plugin
-      dest: murano.rpm
+      murano:
+        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/murano-1.1-1.1.0-1/detach-murano-1.1-1.1.0-1.noarch.rpm
+        name: murano fuel plugin
+        dest: murano.rpm
 
-    kibana:
-      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/elasticsearch_kibana-0.10-0.10.2-1.noarch.rpm
-      name: stacklight/kibana fuel plugin
-      dest: /root/kibana.rpm
+      kibana:
+        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/elasticsearch_kibana-0.10-0.10.2-1.noarch.rpm
+        name: stacklight/kibana fuel plugin
+        dest: /root/kibana.rpm
 
-    grafana:
-      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/influxdb_grafana-0.10-0.10.2-1.noarch.rpm
-      name: stacklight/grafana fuel plugin
-      dest: /root/grafana.rpm
+      grafana:
+        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/influxdb_grafana-0.10-0.10.2-1.noarch.rpm
+        name: stacklight/grafana fuel plugin
+        dest: /root/grafana.rpm
 
-    lma:
-      url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/lma_collector-0.10-0.10.2-1.noarch.rpm
-      name: stacklight/lma fuel plugin
-      dest: /root/lma.rpm
+      lma:
+        url: https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/lma_collector-0.10-0.10.2-1.noarch.rpm
+        name: stacklight/lma fuel plugin
+        dest: /root/lma.rpm
 
   tasks:
-    - name: get plugins
+    - name: install git
+      tags: prepare
+      yum: name=git state=latest
+
+    - name: get repo
+      tags: prepare
+      git:
+        repo=https://github.com/aepifanov/mos_mu.git
+        version=9.2
+        dest=/root/mos_mu
+    - name: install ansible
+      tags: prepare
+      command: cd mos_mu && ./install_ansible.sh
+
+    - name: get fuel_plugins
+      tags: fuel_plugins
       get_url:
-        url: {{ item.url }}
-        dest: {{ item.dest }}
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
         force_basic_auth: yes
         with_dict:
-          - {{ plugins }}
+          - "{{ fuel_plugins }}"
 
-    - name: install plugins
-      command: fuel plugins --install {{item.dest}}
+    - name: install fuel_plugins
+      tags: fuel_plugins
+      command: "fuel fuel_plugins --install {{item.dest}}"
+      when: "{{ fuel_plugins }}"
       with_dict:
-        - {{ plugins }}
+        - "{{ fuel_plugins }}"
 
     - name: get contrail vcenter package
+      tags: fuel_plugins
       get_url:
-        url: {{ item.vcenter_package_url }}
-        dest: {{ item.vcenter_package_dest }}
+        url: "{{ item.vcenter_package_url }}"
+        dest: "{{ item.vcenter_package_dest }}"
         force_basic_auth: yes
       with_items:
-       - {{ plugins.contrail }}
+       - "{{ fuel_plugins.contrail }}"
+      when: "{{ fuel_plugins.contrail }}"
 
     - name: get contrail package
+      tags: fuel_plugins
       get_url:
-        url: {{ item.contrail_package_url }}
-        dest: {{ item.contrail_package_url }}
+        url: "{{ item.contrail_package_url }}"
+        dest: "{{ item.contrail_package_url }}"
         force_basic_auth: yes
       with_items:
-       - {{ plugins.contrail }}
+       - "{{ fuel_plugins.contrail }}"
+      when: "{{ fuel_plugins.contrail }}"
 
     - name: install contrail package
-      shell: bash -c "{{item.contrail_package_run}}"
+      tags: fuel_plugins
+      shell: "bash -c {{item.contrail_package_run}}"
       with_items:
-       - {{ plugins.contrail }}
+       - "{{ fuel_plugins.contrail }}"
+      when: "{{ fuel_plugins.contrail }}"
 

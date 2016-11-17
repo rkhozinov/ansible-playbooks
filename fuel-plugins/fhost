@@ -1,0 +1,1 @@
+tpi122.bud.mirantis.net ansible_user=root ansible_port=23 ansible_ssh_pass=r00tme host_key_checking=false
