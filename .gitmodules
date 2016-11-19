@@ -1,0 +1,4 @@
+[submodule "ansible-examples"]
+  path = ansible-examples
+  url =git@github.com:rkhozinov/ansible-examples.git
+  branch = master
