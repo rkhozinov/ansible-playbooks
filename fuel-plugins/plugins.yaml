@@ -99,16 +99,16 @@
       with_dict: "{{ fuel_plugins }}"
 
     - name: get contrail package
-      tags: install_plugins
+      tags: install_plugins, contrail
       get_url:
         url: "{{ item.value.contrail_package_url }}"
-        dest: "{{ item.value.contrail_package_url }}"
+        dest: "{{ item.value.contrail_package_dest }}"
         force_basic_auth: yes
       when: item.key == "contrail"
       with_dict: "{{ fuel_plugins }}"
 
     - name: install contrail package
-      tags: install_plugins
+      tags: install_plugins, contrail
       shell: "bash -c {{item.value.contrail_package_run}}"
       when: item.key == "contrail"
       with_dict: "{{ fuel_plugins }}"
