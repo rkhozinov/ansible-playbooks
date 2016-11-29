@@ -2,3 +2,7 @@
 	path = examples
 	url = https://github.com/ansible/ansible-examples.git
 	branch = master
+[submodule "mos_mu"]
+	path = fuel-plugins/mos_mu
+	url = https://github.com/aepifanov/mos_mu.git
+	branch = 9.2
