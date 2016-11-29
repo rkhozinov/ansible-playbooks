@@ -1,0 +1,50 @@
+---
+
+enable_fuel_repos: true
+fuel_repos:
+ - "mos9.0-base"
+ - "mos9.0-updates"
+ - "mos9.0-security"
+storage_endpoint: 172.16.177.5:5000
+
+git_repo:
+  url: https://github.com/aepifanov/mos_mu.git
+  branch: 9.2
+  dest: /root/mos_mu
+
+fuel_plugins:
+  contrail:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm"
+    name: contrail
+    dest: /root/contrail.rpm
+    vcenter_package_url: "http://{{storage_endpoint}}/contrail/5.0/contrail-install-vcenter-plugin_3.2.0.0-25_all.deb"
+    vcenter_package_dest: "/var/www/nailgun/plugins/contrail-5.0/"
+    contrail_package_url: "http://{{storage_endpoint}}/contrail/5.0/contrail-install-packages_3.1.0.0-25%7eUbuntu-14.04.4-mitaka_all.deb"
+    contrail_package_dest: "/var/www/nailgun/plugins/contrail-5.0/"
+    contrail_package_run: "/var/www/nailgun/plugins/contrail-5.0/install.sh"
+
+  ldap:
+    url: "http://plugins.mirantis.com/repository/l/d/ldap/ldap-3.0-3.0.0-1.noarch.rpm"
+    name: ldap
+    dest: /root/ldap.rpm
+
+  murano:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/murano-1.1-1.1.0-1/detach-murano-1.1-1.1.0-1.noarch.rpm"
+    name: murano
+    dest: /root/murano.rpm
+
+  kibana:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/elasticsearch_kibana-0.10-0.10.2-1.noarch.rpm"
+    name: kibana
+    dest: /root/kibana.rpm
+
+  grafana:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/influxdb_grafana-0.10-0.10.2-1.noarch.rpm"
+    name: grafana
+    dest: /root/grafana.rpm
+
+  lma:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/lma_collector-0.10-0.10.2-1.noarch.rpm"
+    name: lma
+    dest: /root/lma.rpm
+
