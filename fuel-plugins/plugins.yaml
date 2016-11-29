@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: lab
   remote_user: root
   gather_facts: false
   vars:
@@ -51,7 +51,7 @@
         repo=https://github.com/aepifanov/mos_mu.git
         version=9.2
         dest=/root/mos_mu
-        clone=no
+        clone=yes
         update=yes
 
     - name: check ansible
