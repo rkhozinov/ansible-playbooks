@@ -1,0 +1,85 @@
+---
+- hosts: lab2
+  remote_user: root
+  gather_facts: false
+  vars:
+    mos_updates_key: "http://mirror.fuel-infra.org/mos-repos/centos/mos9.0-centos7/updates/RPM-GPG-KEY-mos9.0"
+    mos_playbooks: "mos-playbooks"
+    python_cudet: "python-cudet"
+    mos_mu_dir: "/root/mos_mu"
+    mos_update_repo_name: "mos-updates"
+
+  tasks:
+
+    - name: Add mos-updates repo
+      tags: add_repo
+      template:
+        src=templates/mos91-updates.j2
+        dest=/etc/yum.repos.d/mos-updates.repo
+      when: mos_updates_key is defined
+
+    - name: Clean the YUM cache
+      tags: add_repo
+      shell: yum clean all
+
+    - name: Get the repos
+      tags: add_repo
+      shell: yum repolist all
+      register: repolist
+
+    - name: Verify repo
+      tags: add_repo
+      fail: msg="{{mos_update_repo_name}} was not added"
+      when: "'{{mos_update_repo_name}}' not in repolist.stdout"
+      register: repolist
+
+    - name: Install a code-based integrity check tool Cudet
+      tags: install_cudet
+      yum: name={{python_cudet}} state=present
+
+    - name: Prepare the Fuel Master node for the Noop run
+      tags: prepare_fuel
+      shell: update-prepare prepare master
+
+    - name: Restart nailgun services
+      tags: prepare_fuel,restart_services
+      shell: systemctl restart assassind nailgun oswl_flavor_collectord
+             oswl_image_collectord oswl_keystone_user_collectord
+             oswl_tenant_collectord oswl_vm_collectord oswl_volume_collectord
+             receiverd statsenderd
+
+    - name: Update the Fuel Master node packages, services, and configuration
+      tags: update_fuel
+      shell: update-prepare update master
+
+    - name: Get Fuel version
+      tags: fuel_version
+      shell: fuel2 fuel-version
+      register: fuel_version
+
+    - name: Verfify Fuel version
+      fail: msg="fuel version is not 9.1"
+      tags: fuel_version
+      when: "'9.0' not in fuel_version.stdout"
+
+    - name: Get env
+      shell: fuel env | tail -n 1 | cut -d ' ' -f1
+      tags: update_env,fuel_version,check_repo
+      register: fuel_env_id
+
+    - name: Get the env settings
+      shell: fuel settings --env {{fuel_env_id.stdout}} --download |
+             grep {{mos_update_repo_name}} /root/settings_{{fuel_env_id.stdout}}.yaml
+      tags: update_env
+      when: fuel_env_id is defined
+
+    - name: Update the env
+      tags: update_env
+      shell: fuel2 update --env {{fuel_env_id.stdout}} install --repos {{mos_update_repo_name}} --restart-rabbit --restart-mysql
+      when: fuel_env_id is defined
+
+    - name: get logs
+      tags: log
+      fetch:
+        src={{mos_mu_dir}}/ansible.log
+        dest=logs
