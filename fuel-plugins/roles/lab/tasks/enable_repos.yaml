@@ -1,0 +1,6 @@
+---
+
+- name: enable repos
+  shell: bash -c "/usr/bin/yum-config-manager --enable {{item}} --save"
+  with_items: "{{ fuel_repos }}"
+  when: fuel_repos is defined and enable_fuel_repos

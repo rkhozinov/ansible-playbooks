@@ -1,0 +1,53 @@
+---
+
+- stat: path={{venv}}
+  tags: envlist
+  register: venv_path
+
+- debug: msg="{{venv}} exists and is a directory"
+  tags: envlist
+  when: venv_path.stat.isdir is defined and venv_path.stat.isdir
+
+- name: env list
+  tags: envlist, getenv
+  command: "{{ venv }}/bin/dos.py list"
+  register: env_list
+
+- name: env list
+  tags: get1env
+  command: "{{ venv }}/bin/dos.py list"
+  register: 1env
+
+- name: snapshot-list
+  tags: envlist
+  command: "{{ venv }}/bin/dos.py snapshot-list {{item}}"
+  register: snapshot_list
+  with_items:
+    - "{{1env.stdout_lines[-1]}}"
+
+- name: "Resume the '{{2}}' env"
+  tags: resume
+  command: "{{ venv }}/bin/dos.py resume"
+  when: env_list is defined and env_list
+
+- name: "Resume the '{{env_list.stdout_lines[2]}}' env"
+  tags: revertlast
+  command: "{{ venv }}/bin/dos.py resume"
+  when: env_list is defined and env_list
+
+- debug: msg="{{env_list.stdout_lines[2:]}}"
+  tags: envlist
+  when: env_list is defined and env_list
+
+- name: snapshot-list
+  tags: envlist
+  command: "{{ venv }}/bin/dos.py snapshot-list {{item}}"
+  register: snapshot_list
+  with_items:
+    - "{{env_list.stdout_lines[2:]}}"
+
+- debug: msg="snapshot list - {{item.stdout_lines[2:]}}" verbosity=1
+  tags: envlist
+  when: snapshot_list is defined and snapshot_list
+  with_items:
+    - "{{snapshot_list.results}}"

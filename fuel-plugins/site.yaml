@@ -3,23 +3,8 @@
 - name: configure and install fuel plugins
   hosts: lab
   remote_user: root
-  gather_facts: false
+  gather_facts: smart
 
   roles:
     - lab
-  tags:
-    - prepare
-    - install_plugins
-#   - contrail_plugin
 
-#- name: do host specific actions
-#  hosts: host
-#  remote_user: jenkins
-#  gather_facts: false
-#
-#  roles:
-#    - host
-#  tags:
-#    - envlist
-#   - create_snapshot
-#   - snapshot_env

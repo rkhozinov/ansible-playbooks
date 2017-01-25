@@ -1,6 +1,4 @@
 ---
-- debug: msg="{{plugins.items}}"
-  tags: debug_plugins
 
 - name: remove plugin plugin
   file:
@@ -21,4 +19,3 @@
      echo {{ item.value.name}} has been already installed ||
      fuel plugins --install {{item.value.dest}}
   with_dict: "{{ plugins }}"
-

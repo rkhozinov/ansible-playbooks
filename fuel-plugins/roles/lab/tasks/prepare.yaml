@@ -1,24 +1,18 @@
 ---
 
-- name: enable repos
-  shell: bash -c "/usr/bin/yum-config-manager --enable {{item}} --save"
-  with_items: "{{ fuel_repos }}"
-  when: fuel_repos is defined and enable_fuel_repos
-
 - name: install git
   yum: name=git state=latest
 
 - name: get repo
-  tags: git
   git:
-    repo="{{ git_repo.url }}"
-    version="{{ git_repo.branch }}"
-    dest="{{ git_repo.dest }}"
+    repo="{{git_repo.url}}"
+    version="{{git_repo.branch}}"
+    dest="{{git_repo.dest}}"
     clone=yes
     update=yes
 
 - name: check ansible
-  yum: name=ansible-2.0* state=present
+  yum: name=ansible state=present
   register: ansible_installed
 
 - name: install ansible

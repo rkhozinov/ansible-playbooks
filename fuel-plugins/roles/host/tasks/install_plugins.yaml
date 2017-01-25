@@ -1,0 +1,39 @@
+---
+
+- stat: path={{venv}}
+  tags: envlist
+  register: venv_path
+
+- debug: msg="{{venv}} exists and is a directory"
+  tags: envlist
+  when: venv_path.stat.isdir is defined and venv_path.stat.isdir
+
+- name: env list
+  tags: envlist
+  command: "{{ venv }}/bin/dos.py list"
+  register: env_list
+
+- debug: msg="{{env_list.stdout | to_nice_json}}
+  tags: envlist
+  when: env_list is defined and env_list
+
+#- name: remove plugin plugin
+#  file:
+#    path: "{{item.value.dest}}"
+#    state: absent
+#  with_dict: "{{ plugins }}"
+#
+#- name: get plugins
+#  get_url:
+#    url: "{{ item.value.url }}"
+#    dest: "{{ item.value.dest }}"
+#    force_basic_auth: yes
+#  with_dict: "{{ plugins }}"
+#
+#- name: install fuel plugins
+#  shell: >
+#     fuel plugins --list | grep -q {{ item.value.name }} &&
+#     echo {{ item.value.name}} has been already installed ||
+#     fuel plugins --install {{item.value.dest}}
+#  with_dict: "{{ plugins }}"
+
