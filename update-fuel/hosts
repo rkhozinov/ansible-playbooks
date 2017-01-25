@@ -1,0 +1,5 @@
+[lab]
+tpi71.bud.mirantis.net ansible_port=23 ansible_user=root ansible_password=r00tme host_key_checking=False record_host_keys=False ansible_ssh_args='UserKnownHostsFile=/dev/null'
+
+[lab2]
+tpi124.bud.mirantis.net ansible_port=23 ansible_user=root ansible_password=r00tme host_key_checking=False record_host_keys=False ansible_ssh_args='UserKnownHostsFile=/dev/null'
