@@ -1,5 +1,7 @@
 *.swp
 .retry
+hosts
 host
-.*host
 fuel-plugins/mos_mu/
+ansible.log
+.idea
