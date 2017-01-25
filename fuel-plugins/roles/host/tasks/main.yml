@@ -1,0 +1,7 @@
+---
+
+- include: dospy.yaml
+  tags: envlist
+
+#- include: dospy.yaml create_snapshot=true
+#  tags: snapshot

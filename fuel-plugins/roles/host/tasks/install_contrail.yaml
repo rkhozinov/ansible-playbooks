@@ -1,0 +1,22 @@
+---
+
+- name: get contrail vcenter package
+  get_url:
+    url: "{{ item.value.vcenter_package_url }}"
+    dest: "{{ item.value.vcenter_package_dest }}"
+    force_basic_auth: yes
+  when: item.key == "contrail"
+  with_dict: "{{ plugins }}"
+
+- name: get contrail package
+  get_url:
+    url: "{{ item.value.contrail_package_url }}"
+    dest: "{{ item.value.contrail_package_dest }}"
+    force_basic_auth: yes
+  when: item.key == "contrail"
+  with_dict: "{{ plugins }}"
+
+- name: install contrail package
+  shell: "bash -c {{item.value.contrail_package_run}}"
+  when: item.key == "contrail"
+  with_dict: "{{ plugins }}"

@@ -1,9 +1,11 @@
 ---
+
+- include: enable_repos.yaml
+
 - include: prepare.yaml
-  tags: prepare
 
 - include: install_plugins.yaml plugins={{ fuel_plugins }}
   tags: install_plugins
 
-- include: install_contrail.yaml plugins={{ fuel_plugins['contrail'] }}
-  tags: contrail
+#- include: install_contrail.yaml plugins={{ fuel_plugins }}
+#  tags: install_contrail
