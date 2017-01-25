@@ -1,0 +1,96 @@
+---
+- hosts: lab
+  remote_user: root
+  gather_facts: false
+  vars:
+    mos_release: "http://mirror.fuel-infra.org/mos-repos/centos/mos9.0-centos7/9.2-updates/x86_64/Packages/mos-release-9.2-1.el7.x86_64.rpm"
+    mos_playbooks: "mos-playbooks"
+    # 801
+    mos_centos_proposed_mirror_id: "proposed-2017-01-23-182024"
+    mos_ubuntu_mirror_id: "9.0-2017-01-23-164421"
+    snapshots_suite: "mos9.0-proposed"
+    mos_mu_dir: "/root/mos_playbooks/mos_mu/"
+
+  tasks:
+#    - name: Uinstall ansible
+#      yum:
+#        name=ansible
+#        state=absent
+
+    - name: Add the mos92-updates repository
+      yum:
+        name={{mos_release}}
+        state=present
+
+    - name: Clean the YUM cache
+      shell: yum clean all
+
+    - name: Add the mos-playbooks package
+      yum:
+        name={{mos_playbooks}}
+        state=present
+
+    - name: Get mos-mu repo from git
+      git:
+        repo=https://github.com/aepifanov/mos_mu.git
+        version=9.2
+        dest=/root/mos_mu
+        clone=yes
+        update=yes
+
+    - name: Fix mos repo
+      template:
+        src=templates/mos92-updates.j2
+        dest=/etc/yum.repos.d/mos92-updates.repo
+      when: mos_centos_proposed_mirror_id is defined
+
+#    - name: Fix (https://review.openstack.org/#/c/421841/) for (https://bugs.launchpad.net/fuel/+bug/1657160)
+#      copy:
+#        src=nailgun-server.j2
+#        dest=/etc/puppet/mitaka-9.0/modules/fuel/manifests/nailgun/server.pp
+
+    - name: Perform a preparation playbook for the Fuel Master node
+      tags: prepare_fuel
+      shell: cd {{mos_mu_dir}} && ansible-playbook playbooks/mos9_prepare_fuel.yml
+
+    - name: Update the Fuel Master node packages, services, and configuration
+      tags: update_fuel
+      shell: cd {{mos_mu_dir}} && ansible-playbook playbooks/update_fuel.yml -e '{"rebuild_bootstrap":false}'
+
+    - name: Upgrade the Ubuntu kernel to version 4.4 for the Fuel bootstrap
+      tags: update_kernel
+      shell: cd {{mos_mu_dir}} && ansible-playbook playbooks/mos9_fuel_upgrade_kernel_4.4.yml
+
+    - name: Get Fuel version
+      tags: fuel_version
+      shell: fuel2 fuel-version
+      register: fuel_version
+
+    - name: Verfify Fuel version
+      fail: msg="fuel version is not 9.2"
+      tags: fuel_version
+      when: "'9.2' not in fuel_version.stdout"
+
+    - name: Get env
+      shell: fuel env | tail -n 1 | cut -d ' ' -f1
+      tags: prepare_env,update_env
+      register: fuel_env_id
+
+    - name: Prepare the env
+      tags: prepare_env
+      shell: cd {{mos_mu_dir}} && ansible-playbook playbooks/mos9_prepare_env.yml
+             -e '{"env_id":{{fuel_env_id.stdout}},
+             "snapshot_repo":"snapshots/{{mos_ubuntu_mirror_id}}",
+             "snapshot_suite":"{{snapshots_suite}}" }'
+      when: fuel_env_id is defined and mos_ubuntu_mirror_id is defined
+
+    - name: Update the env
+      tags: update_env
+      shell: fuel2 update --env {{fuel_env_id.stdout}} install --repos mos9.2-updates
+      when: fuel_env_id is defined
+
+    - name: get logs
+      tags: log
+      fetch:
+        src={{mos_mu_dir}}/ansible.log
+        dest=logs
