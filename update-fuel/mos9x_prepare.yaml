@@ -6,16 +6,20 @@
     mos_release: "http://mirror.fuel-infra.org/mos-repos/centos/mos9.0-centos7/9.2-updates/x86_64/Packages/mos-release-9.2-1.el7.x86_64.rpm"
     mos_playbooks: "mos-playbooks"
     # 801
-    mos_centos_proposed_mirror_id: "proposed-2017-01-23-182024"
-    mos_ubuntu_mirror_id: "9.0-2017-01-23-164421"
+    # https://product-ci.infra.mirantis.net/view/9.x/job/9.x.snapshot/822/artifact/snapshots.params/*view*/
+    mos_centos_proposed_mirror_id: "proposed-2017-01-28-114420"
+    mos_ubuntu_mirror_id: "9.0-2017-01-28-114420"
     snapshots_suite: "mos9.0-proposed"
     mos_mu_dir: "/root/mos_playbooks/mos_mu/"
+    ansible_fixed: true
+    bug_1657160_fixed: true
 
   tasks:
-#    - name: Uinstall ansible
-#      yum:
-#        name=ansible
-#        state=absent
+    - name: Uinstall ansible
+      yum:
+        name=ansible
+        state=absent
+      when: ansible_fixed is defined and not ansible_fixed
 
     - name: Add the mos92-updates repository
       yum:
@@ -44,10 +48,11 @@
         dest=/etc/yum.repos.d/mos92-updates.repo
       when: mos_centos_proposed_mirror_id is defined
 
-#    - name: Fix (https://review.openstack.org/#/c/421841/) for (https://bugs.launchpad.net/fuel/+bug/1657160)
-#      copy:
-#        src=nailgun-server.j2
-#        dest=/etc/puppet/mitaka-9.0/modules/fuel/manifests/nailgun/server.pp
+    - name: Fix (https://review.openstack.org/#/c/421841/) for (https://bugs.launchpad.net/fuel/+bug/1657160)
+      copy:
+        src=nailgun-server.j2
+        dest=/etc/puppet/mitaka-9.0/modules/fuel/manifests/nailgun/server.pp
+      when: bug_1657160_fixed is defined and not bug_1657160_fixed
 
     - name: Perform a preparation playbook for the Fuel Master node
       tags: prepare_fuel
