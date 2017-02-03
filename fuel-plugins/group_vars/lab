@@ -61,8 +61,15 @@ fuel_plugins:
     name: grafana2
     dest: /root/grafana2.rpm
 
-  lma:
-    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/lma_collector-0.10-0.10.2-1.noarch.rpm"
-    name: lma
-    dest: /root/lma.rpm
+  collector:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/Stacklight-0.10-0.10.3-1/lma_collector-0.10-0.10.3-1.noarch.rpm"
+    name: collector
+    dest: /root/collector.rpm
+
+  alerting:
+    url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/Stacklight-0.10-0.10.3-1/lma_infrastructure_alerting-0.10-0.10.3-1.noarch.rpm"
+    name: alerting
+    dest: /root/alerting.rpm
+
+
 
