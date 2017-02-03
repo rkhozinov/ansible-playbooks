@@ -1,5 +1,5 @@
 ---
-- hosts: lab
+- hosts: lab2
   remote_user: root
   gather_facts: false
   vars:
