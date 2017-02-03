@@ -1,6 +1,6 @@
 ---
 
-enable_repos: true
+enable_repos: false
 fuel_repos:
   last_build:
     name: last_build
@@ -9,8 +9,8 @@ fuel_repos:
     name: last_succ_build
     url: https://product-ci.infra.mirantis.net/view/9.x/job/9.x.snapshot/lastSuccessfulBuild/artifact/snapshots.params
 
-install_contrail_plugin: true
-install_contrail_packages: true
+install_contrail_plugin: false
+install_contrail_packages: false
 
 fuel_repos:
  - "mos9.0-base"
@@ -28,6 +28,7 @@ fuel_plugins:
   contrail:
     url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/contrail-5.0-5.0.0-1/contrail-5.0-5.0.0-1.noarch.rpm"
     name: contrail
+    install: false
     dest: /root/contrail.rpm
     vcenter_package_url: "http://{{storage_endpoint}}/contrail/5.0/contrail-install-vcenter-plugin_3.2.0.0-25_all.deb"
     vcenter_package_dest: "/var/www/nailgun/plugins/contrail-5.0/"
@@ -40,36 +41,43 @@ fuel_plugins:
     url: "http://mirror.fuel-infra.org/mos-plugins/centos/9.1/ldap-3.0-3.0.0-1.noarch.rpm"
     name: ldap
     dest: /root/ldap.rpm
+    install: false
 
   murano:
     url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/murano%201.2-1.2.0-1/detach-murano-1.2-1.2.0-1.noarch.rpm"
     name: murano
     dest: /root/murano.rpm
+    install: false
 
   kibana:
     url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/elasticsearch_kibana-0.10-0.10.2-1.noarch.rpm"
     name: kibana
     dest: /root/kibana.rpm
+    install: true
 
   grafana:
     url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/StackLight-0.10-0.10.2-1/influxdb_grafana-0.10-0.10.2-1.noarch.rpm"
     name: grafana
     dest: /root/grafana.rpm
+    install: true
 
   grafana2:
     url: "https://plugin-ci.fuel-infra.org/job/0.10.fuel-plugin.influxdb-grafana.verify/20/artifact/plugin/influxdb_grafana-0.10-0.10.3-1.noarch.rpm"
     name: grafana2
     dest: /root/grafana2.rpm
+    install: false
 
   collector:
     url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/Stacklight-0.10-0.10.3-1/lma_collector-0.10-0.10.3-1.noarch.rpm"
     name: collector
     dest: /root/collector.rpm
+    install: true
 
   alerting:
     url: "https://3a98d2877cb62a6e6b14-93babe93196056fe375611ed4c1716dd.ssl.cf5.rackcdn.com/Stacklight-0.10-0.10.3-1/lma_infrastructure_alerting-0.10-0.10.3-1.noarch.rpm"
     name: alerting
     dest: /root/alerting.rpm
+    install: true
 
 
 
