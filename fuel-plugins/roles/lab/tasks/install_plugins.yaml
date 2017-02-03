@@ -18,4 +18,5 @@
      fuel plugins --list | grep -q {{ item.value.name }} &&
      echo {{ item.value.name}} has been already installed ||
      fuel plugins --install {{item.value.dest}}
+  when: item.value.install == True
   with_dict: "{{ plugins }}"
