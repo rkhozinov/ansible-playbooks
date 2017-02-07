@@ -16,7 +16,7 @@
 
     - name: Configure sysctl
       tags: iptables
-      template: src=sysctl.conf.j2
+      template: src=./sysctl.conf.j2
                 dest=/etc/sysctl.conf
 
     - name: Apply sysctl changes
