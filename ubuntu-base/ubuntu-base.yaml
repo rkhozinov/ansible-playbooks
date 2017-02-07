@@ -1,0 +1,25 @@
+---
+- hosts: all
+  remote_user: rkhozinov
+  sudo: yes
+  vars:
+    sysctl_net_ipv4_ip_forward: 1
+    sysctl_net_ipv4_conf_default_rp_filter: 0
+    sysctl_net_ipv4_conf_all_rp_filter: 0
+
+  tasks:
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+    - name: Configure ip forwarding
+      tags: iptables
+      template: src=sysctl.conf.j2
+                dest=/etc/sysctl.conf
+
+    - name: Apply sysctl changes
+      tags: iptables
+      command: sysctl -p
