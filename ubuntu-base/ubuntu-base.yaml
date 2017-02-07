@@ -8,14 +8,13 @@
     sysctl_net_ipv4_conf_all_rp_filter: 0
 
   tasks:
-    - name: Run the equivalent of "apt-get update" as a separate step
+    - name: apt update, upgrade, clean
       apt:
         update_cache: yes
-
-    - name: Update all packages to the latest version
-      apt:
         upgrade: dist
-    - name: Configure ip forwarding
+        autoremove: yes
+
+    - name: Configure sysctl
       tags: iptables
       template: src=sysctl.conf.j2
                 dest=/etc/sysctl.conf
