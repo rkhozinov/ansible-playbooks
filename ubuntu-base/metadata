@@ -17,6 +17,7 @@ packages:
  - ansible
  - software-properties-common
  - vim
+ - pastebinit
 
 users:
   - default
