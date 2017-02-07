@@ -31,6 +31,6 @@ users:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCti9e5kyNEtX3MEns+eehUCzaxZmI8FWkWrLeRQY3jLUGzI3+N12tA7gKffczGIDP/ttnDg1hl98Yw28mkrIfYYMwRMqsBkGmYZyu6EXccyde6/5U/dgKVFGYLjWmbAAcaIaO2YoxqUJKvIanfLNHTRI29KwgxpaMCtjB7+jHiw/V0MF2xKi8yJgajZgh8iXPiv50BGjICx1BuqgqZb5jjxouV0FpU28mBOobqtaphOHeFPHk1Uool9MBt+2ocAjLbFhozmx0xryBVG4FGreovK60Zz4PuGCUL98rSTt8fbebfVokqkCG+sjykTcEQ8h5/0BUR4sPXw5mxATHD/AOv rkhozinov@rkhw
 
 runcmd:
-  - git clone -b trunk https://github.com/rkhozinov/ansible-playbooks.git
+  - git clone -b master https://github.com/rkhozinov/ansible-playbooks.git
   - cd ansible-playbooks/ubuntu-base
   - ansible-playbook -i 'localhost,' --connection=local ubuntu-base.yaml
