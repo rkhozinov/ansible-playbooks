@@ -6,3 +6,4 @@ fuel-plugins/mos_mu/
 ansible.log
 .idea
 examples/
+*.log
