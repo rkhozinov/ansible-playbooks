@@ -1,0 +1,12 @@
+---
+
+- name: install git
+  yum: name=git state=latest
+
+- name: check ansible
+  yum: name=ansible state=present
+  register: ansible_installed
+
+- name: install ansible
+  shell: cd mos_mu && source ./install_ansible.sh
+  when: ansible_installed is not defined

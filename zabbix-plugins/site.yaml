@@ -1,0 +1,9 @@
+---
+
+- name: configure and install fuel plugins
+  hosts: lab
+  remote_user: root
+  gather_facts: smart
+
+  roles:
+    - lab
