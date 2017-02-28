@@ -1,0 +1,6 @@
+---
+
+- include: prepare.yaml
+
+- include: install_plugins.yaml plugins={{ fuel_plugins }}
+  tags: install_plugins

@@ -1,0 +1,28 @@
+---
+
+jenkins_ip: '172.16.177.5'
+
+fuel_plugins:
+  zabbix_monitoring:
+    url: "http://{{jenkins_ip}}:8080/view/10.0.zabbix/job/10.0.fuel-plugin-external-zabbix.build/lastSuccessfulBuild/artifact/zabbix_monitoring.rpm"
+    name: zabbix_monitoring
+    install: true
+    dest: /root/zabbix_monitoring.rpm
+
+  zabbix_monitoring_emc:
+    url: "http://{{jenkins_ip}}:8080/view/10.0.zabbix/job/10.0.fuel-plugin-zabbix-monitoring-emc.build/lastSuccessfulBuild/artifact/zabbix_monitoring_emc.rpm"
+    name: zabbix_monitoring_emc
+    install: true
+    dest: /root/zabbix_monitoring_emc.rpm
+
+  zabbix_monitoring_extreme_networks:
+    url: "http://{{jenkins_ip}}:8080/view/10.0.zabbix/job/10.0.fuel-plugin-zabbix-monitoring-extreme-networks.build/lastSuccessfulBuild/artifact/zabbix_monitoring_extreme_networks.rpm"
+    name: zabbix_monitoring_extreme_networks
+    install: true
+    dest: /root/zabbix_monitoring_extreme_networks.rpm
+
+  zabbix_snmptrapd:
+    url: "http://{{jenkins_ip}}:8080/view/10.0.zabbix/job/10.0.fuel-plugin-zabbix-snmptrapd.build/lastSuccessfulBuild/artifact/zabbix_snmptrapd.rpm"
+    name: zabbix_snmptrapd
+    install: true
+    dest: /root/zabbix_snmptrapd.rpm

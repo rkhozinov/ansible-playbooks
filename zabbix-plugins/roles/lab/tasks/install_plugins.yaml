@@ -1,0 +1,22 @@
+---
+
+- name: remove plugin plugin
+  file:
+    path: "{{item.value.dest}}"
+    state: absent
+  with_dict: "{{ plugins }}"
+
+- name: get plugins
+  get_url:
+    url: "{{ item.value.url }}"
+    dest: "{{ item.value.dest }}"
+    force_basic_auth: yes
+  with_dict: "{{ plugins }}"
+
+- name: install fuel plugins
+  shell: >
+     fuel plugins --list | grep -q {{ item.value.name }} &&
+     echo {{ item.value.name}} has been already installed ||
+     fuel plugins --install {{item.value.dest}}
+  when: item.value.install == True
+  with_dict: "{{ plugins }}"
